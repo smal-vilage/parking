@@ -17,7 +17,7 @@
                         <h2 class="mb-4" id="status-message">Processing your request...</h2>
                         <div id="thank-you" style="display:none;">
                             <div class="alert alert-success">
-                                <h4 class="alert-heading">شكرا لك!</h4>
+                                <h4 class="alert-heading">شكرا لك</h4>
                                 <p>سيارتك قيد التجهيز, يمكنك ايجادها قرب نقطة المغادرة</p>
                             </div>
                         </div>
@@ -65,8 +65,8 @@
                 thankYou.style.display = "block";
             })
             .catch(() => {
-                statusMsg.textContent = "خطأ لايمكن الاستمرار.";
-                errorMsg.textContent = "لايمكن اكمال الطلب. يرجى التواصل مع الموظفين.";
+                statusMsg.textContent = "خطأ لايمكن الاستمرار";
+                errorMsg.textContent = "لايمكن اكمال الطلب. يرجى التواصل مع الموظفين";
                 errorMsg.classList.remove("d-none");
             });
         }
