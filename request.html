@@ -17,8 +17,8 @@
                         <h2 class="mb-4" id="status-message">Processing your request...</h2>
                         <div id="thank-you" style="display:none;">
                             <div class="alert alert-success">
-                                <h4 class="alert-heading">Thank you!</h4>
-                                <p>Your car is on its way. Please wait at the delivery point.</p>
+                                <h4 class="alert-heading">شكرا لك!</h4>
+                                <p>سيارتك قيد التجهيز, يمكنك ايجادها قرب نقطة المغادرة</p>
                             </div>
                         </div>
                         <div id="error-message" class="alert alert-danger d-none"></div>
@@ -53,7 +53,7 @@
 
         if (!docId) {
             statusMsg.textContent = "Invalid request.";
-            errorMsg.textContent = "No car ID found in the request.";
+            errorMsg.textContent = "لايمكن اكمال الطلب";
             errorMsg.classList.remove("d-none");
         } else {
             db.collection("cars").doc(docId).update({
@@ -65,8 +65,8 @@
                 thankYou.style.display = "block";
             })
             .catch(() => {
-                statusMsg.textContent = "Error processing your request.";
-                errorMsg.textContent = "Could not update your car status. Please contact staff.";
+                statusMsg.textContent = "خطأ لايمكن الاستمرار.";
+                errorMsg.textContent = "لايمكن اكمال الطلب. يرجى التواصل مع الموظفين.";
                 errorMsg.classList.remove("d-none");
             });
         }
