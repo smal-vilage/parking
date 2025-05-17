@@ -74,7 +74,7 @@ function recordCarInfo() {
         const qrCodeContainer = document.getElementById("qr-code");
         qrCodeContainer.innerHTML = "";
 
-        const baseUrl = "http://127.0.0.1:5500/request.html"; // or your public domain
+        const baseUrl = "https://parking.jorshacos.com/request.html"; // or your public domain
         const qrText = `${baseUrl}?id=${encodeURIComponent(docRef.id)}`;
 
         new QRCode(qrCodeContainer, {
