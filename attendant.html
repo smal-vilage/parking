@@ -11,9 +11,32 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         @media print {
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+                height: auto;
+            }
             body * { visibility: hidden; }
             #receipt, #receipt * { visibility: visible; }
-            #receipt { position: absolute; left: 0; top: 0; width: 100%; }
+            #receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .container, .card, .card-body {
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                background: none !important;
+            }
+            @page {
+                margin: 0;
+                size: auto;
+            }
         }
     </style>
 </head>
