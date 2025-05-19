@@ -14,8 +14,11 @@
             html, body {
                 margin: 0 !important;
                 padding: 0 !important;
-                width: 100%;
+                width: 58mm !important;
+                min-width: 58mm !important;
+                max-width: 58mm !important;
                 height: auto;
+                background: none !important;
             }
             body * { visibility: hidden; }
             #receipt, #receipt * { visibility: visible; }
@@ -23,19 +26,27 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
+                width: 58mm !important;
+                min-width: 58mm !important;
+                max-width: 58mm !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                background: none !important;
             }
-            .container, .card, .card-body {
+            .container, .card, .card-body, .mb-3, .mb-4, .row, .col-md-4 {
                 margin: 0 !important;
                 padding: 0 !important;
                 box-shadow: none !important;
                 background: none !important;
             }
+            h1, h2, h3, h4, h5, h6 {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 14px !important;
+            }
             @page {
                 margin: 0;
-                size: auto;
+                size: 58mm 160mm;
             }
         }
     </style>
