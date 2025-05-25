@@ -52,8 +52,13 @@
     </style>
 </head>
 <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Jorshacos Parking Attendant</span>
+            <button class="btn btn-outline-danger ms-auto" onclick="logout()">Logout</button>
+        </div>
+    </nav>
     <div class="container py-5">
-        <h1 class="mb-4 text-center">Jorshacos Restaurant Parking Attendant</h1>
         <div id="login-section" class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
                 <div class="card shadow-sm">
@@ -65,7 +70,7 @@
                         <div class="mb-3">
                             <input type="password" id="password" class="form-control" placeholder="Password">
                         </div>
-                        <button class="btn btn-primary w-100" onclick="login('attendant')">Login</button>
+                        <button class="btn btn-primary w-100" onclick="login()">Login</button>
                     </div>
                 </div>
             </div>
@@ -101,6 +106,20 @@
             </div>
         </div>
     </div>
+    <div id="loading-overlay" style="
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,1); /* darker background */
+        z-index: 20000; /* higher than navbar and all content */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    ">
+        <div class="spinner-border text-light" style="width: 4rem; height: 4rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <script src="auth.js"></script>
     <script src="attendant.js"></script>
 </body>
 </html>
