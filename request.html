@@ -15,10 +15,13 @@
                 <div class="card shadow-sm mt-5">
                     <div class="card-body text-center">
                         <h2 class="mb-4" id="status-message">Processing your request...</h2>
+                        <div id="confirm-section">
+                            <button id="confirm-btn" class="btn btn-primary mb-3">تأكيد طلب السيارة</button>
+                        </div>
                         <div id="thank-you" style="display:none;">
                             <div class="alert alert-success">
                                 <h4 class="alert-heading">شكرا لك</h4>
-                                <p>سيارتك قيد التجهيز, يمكنك ايجادها قرب نقطة المغادرة</p>
+                                <p>السيارة سوف تكون جاهزة خلال 10 دقائق</p>
                             </div>
                         </div>
                         <div id="error-message" class="alert alert-danger d-none"></div>
@@ -50,25 +53,38 @@
         const statusMsg = document.getElementById("status-message");
         const thankYou = document.getElementById("thank-you");
         const errorMsg = document.getElementById("error-message");
+        const confirmSection = document.getElementById("confirm-section");
+        const confirmBtn = document.getElementById("confirm-btn");
 
+        // Hide status and confirmation if no docId
         if (!docId) {
             statusMsg.textContent = "Invalid request.";
             errorMsg.textContent = "لايمكن اكمال الطلب";
             errorMsg.classList.remove("d-none");
+            confirmSection.style.display = "none";
         } else {
-            db.collection("cars").doc(docId).update({
-                status: "Requested",
-                requestTime: new Date()
-            })
-            .then(() => {
-                statusMsg.style.display = "none";
-                thankYou.style.display = "block";
-            })
-            .catch(() => {
-                statusMsg.textContent = "خطأ لايمكن الاستمرار";
-                errorMsg.textContent = "لايمكن اكمال الطلب. يرجى التواصل مع الموظفين";
-                errorMsg.classList.remove("d-none");
-            });
+            statusMsg.textContent = "يرجى تأكيد طلب السيارة";
+            thankYou.style.display = "none";
+            confirmSection.style.display = "block";
+            confirmBtn.onclick = function() {
+                statusMsg.textContent = "Processing your request...";
+                confirmBtn.disabled = true;
+                db.collection("cars").doc(docId).update({
+                    status: "Requested",
+                    requestTime: new Date()
+                })
+                .then(() => {
+                    statusMsg.style.display = "none";
+                    thankYou.style.display = "block";
+                    confirmSection.style.display = "none";
+                })
+                .catch(() => {
+                    statusMsg.textContent = "خطأ لايمكن الاستمرار";
+                    errorMsg.textContent = "لايمكن اكمال الطلب. يرجى التواصل مع الموظفين";
+                    errorMsg.classList.remove("d-none");
+                    confirmBtn.disabled = false;
+                });
+            };
         }
     </script>
 </body>
