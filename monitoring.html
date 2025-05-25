@@ -12,9 +12,14 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Jorshacos Parking Monitoring</span>
+            <button class="btn btn-outline-danger ms-auto" onclick="logout()">Logout</button>
+        </div>
+    </nav>
     <div class="container py-5">
-        <div id="alert-container" style="position:fixed; top:20px; right:20px; z-index:1050; min-width:300px;"></div>
-        <h1 class="mb-4 text-center">Jorshacos Restaurant</h1>
+        <div id="alert-container" style="position:fixed; top:20px; left:20px; z-index:1050; min-width:300px;"></div>
         <div id="login-section" class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
                 <div class="card shadow-sm">
@@ -26,7 +31,7 @@
                         <div class="mb-3">
                             <input type="password" id="password" class="form-control" placeholder="Password">
                         </div>
-                        <button class="btn btn-primary w-100" onclick="login('monitor')">Login</button>
+                        <button class="btn btn-primary w-100" onclick="login()">Login</button>
                     </div>
                 </div>
             </div>
@@ -35,32 +40,33 @@
         <div id="car-status-section" style="display:none;">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <div class="row g-2 align-items-end">
-                        <div class="col-md-4">
-                            <input type="text" id="plate-filter" class="form-control" placeholder="Filter by Plate Number">
-                        </div>
-                        <div class="col-md-3">
-                            <select id="status-filter" class="form-select">
-                                <option value="All">All</option>
-                                <option value="Inside">Inside</option>
-                                <option value="Requested">Requested</option>
-                                <option value="Exited">Exited</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-outline-primary w-100" onclick="filterCars()">Filter</button>
-                        </div>
+                    <div class="input-group input-group-sm mb-2">
+                        <span class="input-group-text">Plate</span>
+                        <input type="text" id="plate-filter" class="form-control" placeholder="Plate Number">
+                        <span class="input-group-text">Status</span>
+                        <select id="status-filter" class="form-select" onchange="handleStatusFilterChange()">
+                            <option value="All">All</option>
+                            <option value="Inside">Inside</option>
+                            <option value="Requested">Requested</option>
+                            <option value="Exited">Exited</option>
+                        </select>
+                        <span class="input-group-text" id="from-label" style="display:none;">From</span>
+                        <input type="date" id="from-filter" class="form-control" placeholder="From" style="display:none;">
+                        <span class="input-group-text" id="to-label" style="display:none;">To</span>
+                        <input type="date" id="to-filter" class="form-control" placeholder="To" style="display:none;">
+                        <button class="btn btn-outline-primary" onclick="filterCars()">Filter</button>
                     </div>
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle" id="car-table">
+                <table class="table table-bordered table-hover table-sm align-middle" id="car-table">
                     <thead class="table-light">
                         <tr>
                             <th>Plate Number</th>
                             <th>Plate Type</th>
                             <th>Owner Mobile</th>
                             <th>Entered</th>
+                            <th>Exited</th>
                             <th>Status</th>
                             <th>Requested</th>
                             <th>Actions</th>
@@ -69,14 +75,31 @@
                     <tbody id="car-list"></tbody>
                 </table>
             </div>
+            <div id="pagination-controls" class="input-group input-group-sm justify-content-center mb-2"></div>
+        </div>
+    </div>
+    <div id="loading-overlay" style="
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,1); /* darker background */
+        z-index: 20000; /* higher than navbar and all content */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    ">
+        <div class="spinner-border text-light" style="width: 4rem; height: 4rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
     <script src="monitoring.js"></script>
+    <script src="auth.js"></script>
+    <script src="records.js"></script>
     <script>
         window.renderCarCard = function(data) {
             let rowClass = "";
             if (data.status === "Requested") rowClass = "table-warning";
-            else if (data.status === "Inside") rowClass = "table-success";
+            else if (data.status === "Inside") rowClass = "table-danger";
+            else if (data.status === "Paid") rowClass = "table-success";
             else if (data.status === "Exited") rowClass = "table-secondary";
             return `
                 <tr class="${rowClass}">
@@ -84,6 +107,7 @@
                     <td>${data.plateType || ""}</td>
                     <td>${data.ownerMobile || ""}</td>
                     <td>${data.enterTime ? new Date(data.enterTime.seconds*1000).toLocaleString() : ""}</td>
+                    <td>${data.exitTime ? new Date(data.exitTime.seconds*1000).toLocaleString() : ""}</td> <!-- Show exit time -->
                     <td>${data.status || ""}</td>
                     <td>${data.requestTime ? new Date(data.requestTime.seconds*1000).toLocaleString() : ""}</td>
                     <td>
@@ -99,6 +123,28 @@
                 </tr>
             `;
         };
+
+        function handleStatusFilterChange() {
+            const status = document.getElementById('status-filter').value;
+            const fromLabel = document.getElementById('from-label');
+            const toLabel = document.getElementById('to-label');
+            const fromInput = document.getElementById('from-filter');
+            const toInput = document.getElementById('to-filter');
+            if (status === "All") {
+                fromLabel.style.display = "none";
+                toLabel.style.display = "none";
+                fromInput.style.display = "none";
+                toInput.style.display = "none";
+            } else {
+                fromLabel.style.display = "";
+                toLabel.style.display = "";
+                fromInput.style.display = "";
+                toInput.style.display = "";
+            }
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            handleStatusFilterChange();
+        });
     </script>
 </body>
 </html>
