@@ -97,6 +97,7 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h3 class="card-title mb-3">Receipt</h3>
+                    <img id="logo" src="logo.png" alt="Logo" class="mb-3" style="max-width: 200px; height: auto;">
                     <div id="receipt">
                         <div id="receipt-info" class="mb-3"></div>
                         <div id="qr-code" class="mb-3"></div>
@@ -150,18 +151,30 @@
                 return;
             }
 
+            const logoImg = document.getElementById("logo");
+            const canvas = document.createElement("canvas");
+            canvas.width = logoImg.naturalWidth;
+            canvas.height = logoImg.naturalHeight;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(logoImg, 0, 0);
+            const base64Logo = canvas.toDataURL("image/png");
+
             const lineApi = sunmiPrinter.lineApi;
+
+            // Print the logo
+            lineApi.printBitmap(base64Logo);
+
+            // Print the rest
             lineApi.printText("---- Parking Receipt ----\n");
             lineApi.printText(`Plate Number: ${data.plateNumber}\n`);
             lineApi.printText(`Plate Type: ${data.plateType}\n`);
             lineApi.printText(`Owner Mobile: ${data.ownerMobile || 'N/A'}\n`);
             lineApi.printText(`Entry Time: ${data.enterTime}\n\n`);
 
-            // Print the QR Code from stored URL
             lineApi.printText("Scan for car request:\n");
             lineApi.printQRCode(data.qrUrl, 4, 1);
 
-            // Finalize
             lineApi.printText("\n\n\n");
             lineApi.lineWrap(3);
             lineApi.commit();
