@@ -28,8 +28,8 @@ function recordCarInfo() {
         const qrCodeContainer = document.getElementById("qr-code");
         qrCodeContainer.innerHTML = "";
 
-        // domain = "https://parking.jorshacos.com"
-        domain = "http://127.0.0.1:5500"
+        domain = "https://parking.jorshacos.com"
+        // domain = "http://127.0.0.1:5500"
         const baseUrl = domain + "/request.html"; 
         const qrText = `${baseUrl}?id=${encodeURIComponent(docRef.id)}`;
 
@@ -47,5 +47,13 @@ function recordCarInfo() {
             <div><strong>Entry Time:</strong> ${enterTime.toLocaleString()}</div>
         `;
         console.log("qrUrl", qrText);
+
+        window.lastReceiptData = {
+            plateNumber,
+            plateType,
+            ownerMobile,
+            enterTime: enterTime.toLocaleString(),
+            qrUrl: qrText
+        };
     });
 }
